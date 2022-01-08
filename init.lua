@@ -65,6 +65,36 @@ cmp.setup({
     }, {{name = 'buffer'}})
 })
 
+local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+-- Mappings.
+local opts = {noremap = true, silent = true}
+
+-- See `:help vim.lsp.*` for documentation on any of the below functions
+buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+buf_set_keymap('n', '<space>wa',
+               '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+buf_set_keymap('n', '<space>wr',
+               '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+buf_set_keymap('n', '<space>wl',
+               '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
+               opts)
+buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>',
+               opts)
+buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+buf_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+buf_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+buf_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+buf_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
+buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+
 -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline('/', {sources = {{name = 'buffer'}}})
 
@@ -78,9 +108,11 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp
                                                                      .protocol
                                                                      .make_client_capabilities())
 
-require('lspconfig')['gopls'].setup {capabilities = capabilities}
-require('lspconfig')['tsserver'].setup {capabilities = capabilities}
-require('lspconfig')['vimls'].setup {capabilities = capabilities}
+local nvim_lsp = require('lspconfig')
+local servers = {'pyright', 'gopls', 'vimls', 'tsserver'}
+for _, lsp in ipairs(servers) do
+    nvim_lsp[lsp].setup {flags = {debounce_text_changes = 150}}
+end
 
 -- If you want insert `(` after select function or method item
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
@@ -95,4 +127,52 @@ require('nvim_comment').setup({
     comment_empty = false,
     line_mapping = "<leader>/"
 })
-require("which-key").setup {timeout_ms = 100}
+
+local actions = require("telescope.actions")
+require("telescope").setup {
+    defaults = {mappings = {i = {["<esc>"] = actions.close}}}
+}
+
+local cmd = vim.cmd
+local g = vim.g
+
+local function map(mode, lhs, rhs, opts)
+    local options = {noremap = true}
+    if opts then options = vim.tbl_extend('force', options, opts) end
+    vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+end
+
+map('n', '<leader>ft', '<cmd>Telescope<CR>')
+map('n', '<leader>fr', '<cmd>Telescope oldfiles<CR>')
+map('n', '<leader>p', '<cmd>Telescope find_files<CR>')
+map('n', '<leader>fb', '<cmd>Telescope buffers<CR>')
+map('n', '<leader>f', '<cmd>Telescope current_buffer_fuzzy_find<CR>')
+map('n', '<leader>g', '<cmd>Telescope live_grep<CR>')
+map('n', '<leader>fs', '<cmd>Telescope treesitter<CR>')
+map('n', '<leader>fc', '<cmd>Telescope commands<CR>')
+map('n', '<leader>fp', '<cmd>Telescope project<CR>')
+map('n', '<leader>fm', '<cmd>Telescope marks<CR>')
+map('n', '<c-k>', '<cmd>wincmd k<CR>') -- ctrlhjkl to navigate splits
+map('n', '<c-j>', '<cmd>wincmd j<CR>')
+map('n', '<c-h>', '<cmd>wincmd h<CR>')
+map('n', '<c-l>', '<cmd>wincmd l<CR>')
+
+local wk = require("which-key")
+wk.register({
+    ["<leader>f"] = {name = "+file"},
+    ["<leader>ff"] = {"<cmd>Telescope find_files<cr>", "Find File"},
+    ["<leader>fr"] = {"<cmd>Telescope oldfiles<cr>", "Open Recent File"},
+    ["<leader>fn"] = {"<cmd>enew<cr>", "New File"}
+})
+
+vim.cmd([[
+  let g:dashboard_default_executive ='telescope'
+  nmap <Leader>ss :<C-u>SessionSave<CR>
+  nmap <Leader>sl :<C-u>SessionLoad<CR>
+  nnoremap <silent> <Leader>fh :DashboardFindHistory<CR>
+  nnoremap <silent> <Leader>ff :DashboardFindFile<CR>
+  nnoremap <silent> <Leader>tc :DashboardChangeColorscheme<CR>
+  nnoremap <silent> <Leader>fa :DashboardFindWord<CR>
+  nnoremap <silent> <Leader>fb :DashboardJumpMark<CR>
+  nnoremap <silent> <Leader>cn :DashboardNewFile<CR>
+]])
