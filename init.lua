@@ -77,8 +77,10 @@ cmp.setup.cmdline(':', {
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp
                                                                      .protocol
                                                                      .make_client_capabilities())
--- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-require('lspconfig')['<YOUR_LSP_SERVER>'].setup {capabilities = capabilities}
+
+require('lspconfig')['gopls'].setup {capabilities = capabilities}
+require('lspconfig')['tsserver'].setup {capabilities = capabilities}
+require('lspconfig')['vimls'].setup {capabilities = capabilities}
 
 -- If you want insert `(` after select function or method item
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
