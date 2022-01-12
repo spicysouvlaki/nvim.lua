@@ -15,6 +15,13 @@ vim.cmd([[
   set clipboard=unnamed
   colorscheme tokyonight 
   set mouse+=a
+  filetype plugin indent on
+  " show existing tab with 4 spaces width
+  set tabstop=4
+  " when indenting with '>', use 4 spaces width
+  set shiftwidth=4
+  " On pressing tab, insert 4 spaces
+  set expandtab
 ]])
 
 require'go'.setup({
@@ -109,7 +116,7 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp
                                                                      .make_client_capabilities())
 
 local nvim_lsp = require('lspconfig')
-local servers = {'pyright', 'gopls', 'vimls', 'tsserver'}
+local servers = {'pyright', 'gopls', 'vimls', 'tsserver', 'eslint'}
 for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {flags = {debounce_text_changes = 150}}
 end

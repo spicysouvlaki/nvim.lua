@@ -45,6 +45,10 @@ return require('packer').startup({
         use {'saadparwaiz1/cmp_luasnip'}
 
         -- use {'neoclide/coc.nvim', {'branch': 'release'}
+        --
+        
+        use {"jose-elias-alvarez/nvim-lsp-ts-utils"}
+        use {"jose-elias-alvarez/null-ls.nvim"}
     end,
     config = {display = {open_fn = require('packer.util').float}}
 })
