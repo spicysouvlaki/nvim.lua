@@ -44,9 +44,12 @@ return require('packer').startup({
         use {'L3MON4D3/LuaSnip'}
         use {'saadparwaiz1/cmp_luasnip'}
 
+        -- GetCurrentLine
+        -- GetCommitLink, GetCurrentBranchLink, GetCurrentCommitLink
+        use {'knsh14/vim-github-link'}
         -- use {'neoclide/coc.nvim', {'branch': 'release'}
         --
-        
+
         use {"jose-elias-alvarez/nvim-lsp-ts-utils"}
         use {"jose-elias-alvarez/null-ls.nvim"}
     end,

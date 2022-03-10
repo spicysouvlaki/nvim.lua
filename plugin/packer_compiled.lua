@@ -204,6 +204,11 @@ _G.packer_plugins = {
     path = "/Users/williamschmitt/.local/share/nvim/site/pack/packer/start/vim-fugitive",
     url = "https://github.com/tpope/vim-fugitive"
   },
+  ["vim-github-link"] = {
+    loaded = true,
+    path = "/Users/williamschmitt/.local/share/nvim/site/pack/packer/start/vim-github-link",
+    url = "https://github.com/knsh14/vim-github-link"
+  },
   ["vim-go"] = {
     loaded = true,
     path = "/Users/williamschmitt/.local/share/nvim/site/pack/packer/start/vim-go",
