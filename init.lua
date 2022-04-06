@@ -37,11 +37,13 @@ require'go'.setup({
     dap_debug = true,
     test_runner = 'richgo'
 })
-
 local protocol = require 'vim.lsp.protocol'
 
 -- Setup nvim-cmp.
 local cmp = require 'cmp'
+luasnip = require 'luasnip'
+
+require("luasnip.loaders.from_vscode").lazy_load()
 
 cmp.setup({
     snippet = {
@@ -84,7 +86,8 @@ cmp.setup({
         end,
       },
     sources = cmp.config.sources({
-        {name = 'nvim_lsp'}, -- { name = 'vsnip' }, -- For vsnip users.
+        {name = 'nvim_lsp'}, 
+        -- { name = 'vsnip' }, -- For vsnip users.
         {name = 'luasnip'} -- For luasnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
